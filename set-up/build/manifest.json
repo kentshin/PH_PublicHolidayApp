@@ -1,0 +1,10 @@
+{
+  "name": "PH Public Holiday Extension",
+  "description": "Pulls the Philippine public holidays of the current year",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_title": "PH Public Holidays",
+    "default_popup": "index.html"
+  }
+}
