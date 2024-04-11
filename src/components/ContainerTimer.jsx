@@ -3,7 +3,6 @@ import React from "react";
 
 const ContainerTimer = ({ nextHolidayDate }) => {
   const nextHoliday = nextHolidayDate?.[0]?.date?.toString();
-  console.log(`holiday >>` + JSON.stringify(nextHoliday));
   const timerCountDown = moment(nextHoliday).diff(moment(), "days", "hours");
 
   return (

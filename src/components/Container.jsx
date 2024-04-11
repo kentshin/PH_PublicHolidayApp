@@ -11,6 +11,7 @@ const Container = () => {
   const yearToday = moment().format("YYYY");
   const [holidayData, setHolidayData] = useState();
   let nextHolidayDate;
+  const formattedDateTimeToday = moment().format('YYYY-MM-DD');
 
   useEffect(() => {
     fetch(
@@ -31,21 +32,22 @@ const Container = () => {
 
   //reducing the current filtered array of holidays to return a new set of modified array
   const currentHolidays = holidayToDate?.reduce((newArray, holidayToDate) => {
-    const upcoming =
-      moment().isBefore(holidayToDate?.start?.date) ||
-      moment().isSame(holidayToDate?.start?.date)
+    const isHolidayToday = moment(formattedDateTimeToday).isSame(holidayToDate?.start?.date)
+    const upcoming = isHolidayToday ||
+      moment().isBefore(holidayToDate?.start?.date)
         ? true
         : false;
     const holidays = {
       holiday: holidayToDate?.summary,
       date: holidayToDate?.start?.date,
       upcoming: upcoming,
+      isToday: isHolidayToday,
     };
     newArray.push(holidays);
     return newArray;
   }, []);
 
-  //holiday list props
+  //holiday array list props
   nextHolidayDate = currentHolidays
     ?.filter((filteredItem) => filteredItem?.upcoming)
     ?.slice(0, 1)
@@ -54,8 +56,7 @@ const Container = () => {
     });
 
   const previousHolidays = currentHolidays
-    ?.filter((filteredItem) => !filteredItem?.upcoming)
-    ?.slice(0, 3);
+    ?.filter((filteredItem) => !filteredItem?.upcoming)?.reverse()?.slice(1, 4);
 
   const currentUpcomingHolidays = currentHolidays
     ?.filter((filteredItem) => filteredItem?.upcoming)
@@ -66,13 +67,13 @@ const Container = () => {
       <div className="my-3 row">
         <ContainerTimer nextHolidayDate={nextHolidayDate} />
         <div className="col-sm">
-          <h7>Previous Holidays</h7>
+          <h7>PREVIOUS HOLIDAYS</h7>
           <ul className="list-group">
             <ListContainer holidayList={previousHolidays} />
           </ul>
         </div>
         <div className="col-sm">
-          <h7>Upcoming Holidays</h7>
+          <h7>UPCOMING HOLIDAYS</h7>
           <ul className="list-group">
             <ListContainer holidayList={currentUpcomingHolidays} />
           </ul>
