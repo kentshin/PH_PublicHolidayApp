@@ -5,13 +5,15 @@ import GOOGLE_APIKEY from "./constant";
 import { getHolidayData } from "./api";
 import ContainerTimer from "./ContainerTimer";
 import ListContainer from "./ListContainer";
+import Spinner from "./spinner/Spinner";
 
 getHolidayData;
 const Container = () => {
   const yearToday = moment().format("YYYY");
   const [holidayData, setHolidayData] = useState();
+  const formattedDateTimeToday = moment().format("YYYY-MM-DD");
+  const [isLoading, setIsLoading] = useState(true);
   let nextHolidayDate;
-  const formattedDateTimeToday = moment().format('YYYY-MM-DD');
 
   useEffect(() => {
     fetch(
@@ -22,6 +24,7 @@ const Container = () => {
       })
       .then((data) => {
         setHolidayData(data?.items);
+        setIsLoading(false);
       });
   }, []);
 
@@ -32,9 +35,11 @@ const Container = () => {
 
   //reducing the current filtered array of holidays to return a new set of modified array
   const currentHolidays = holidayToDate?.reduce((newArray, holidayToDate) => {
-    const isHolidayToday = moment(formattedDateTimeToday).isSame(holidayToDate?.start?.date)
-    const upcoming = isHolidayToday ||
-      moment().isBefore(holidayToDate?.start?.date)
+    const isHolidayToday = moment(formattedDateTimeToday).isSame(
+      holidayToDate?.start?.date
+    );
+    const upcoming =
+      isHolidayToday || moment().isBefore(holidayToDate?.start?.date)
         ? true
         : false;
     const holidays = {
@@ -56,7 +61,9 @@ const Container = () => {
     });
 
   const previousHolidays = currentHolidays
-    ?.filter((filteredItem) => !filteredItem?.upcoming)?.reverse()?.slice(1, 4);
+    ?.filter((filteredItem) => !filteredItem?.upcoming)
+    ?.reverse()
+    ?.slice(1, 4);
 
   const currentUpcomingHolidays = currentHolidays
     ?.filter((filteredItem) => filteredItem?.upcoming)
@@ -64,21 +71,27 @@ const Container = () => {
 
   return (
     <div className="container-fluid my-3">
-      <div className="my-3 row">
-        <ContainerTimer nextHolidayDate={nextHolidayDate} />
-        <div className="col-sm">
-          <h7>PREVIOUS HOLIDAYS</h7>
-          <ul className="list-group">
-            <ListContainer holidayList={previousHolidays} />
-          </ul>
+      {isLoading ? (
+        <center>
+          <Spinner />
+        </center>
+      ) : (
+        <div className="my-3 row">
+          <ContainerTimer nextHolidayDate={nextHolidayDate} />
+          <div className="col-sm">
+            <h7>PREVIOUS HOLIDAYS</h7>
+            <ul className="list-group">
+              <ListContainer holidayList={previousHolidays} />
+            </ul>
+          </div>
+          <div className="col-sm">
+            <h7>UPCOMING HOLIDAYS</h7>
+            <ul className="list-group">
+              <ListContainer holidayList={currentUpcomingHolidays} />
+            </ul>
+          </div>
         </div>
-        <div className="col-sm">
-          <h7>UPCOMING HOLIDAYS</h7>
-          <ul className="list-group">
-            <ListContainer holidayList={currentUpcomingHolidays} />
-          </ul>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

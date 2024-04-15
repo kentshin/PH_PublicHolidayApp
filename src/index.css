@@ -28,7 +28,11 @@ html,body {
   max-width: 100%;
   min-width: 600px;
   min-height: 80vh;
-  color: #54BAB9;
+  color: #6a612c;
+}
+
+html {
+  background: rgba(0,0,0,0.3)
 }
 
 h1 {
